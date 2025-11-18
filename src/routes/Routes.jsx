@@ -10,11 +10,15 @@ import Reports from "../screens/dashboard/pages/Reports";
 import Inventory from "../screens/dashboard/pages/Inventory";
 const router = createBrowserRouter([
   {
-    element: <Login />,
+    element: (
+      <PublicRoute>
+        <Login />
+      </PublicRoute>
+    ),
     path: "/login",
   },
   {
-    path: "/",
+    path: "/dashboard",
     element: (
       <ProtectedRoutes>
         <DashboardLayout />

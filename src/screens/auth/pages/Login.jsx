@@ -36,7 +36,7 @@ const Login = () => {
       .then(() => {
         setMessage("Login successfully!");
         setIsModelOpen(true);
-        navigate("/");
+        navigate("/dashboard");
       })
       .catch((error) => {
         setMessage(error);

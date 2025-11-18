@@ -1,11 +1,11 @@
 import React, { useEffect } from "react";
 import { IoCloseOutline } from "react-icons/io5";
-const Toast = ({ message, isOpen, onClose }) => {
+const Toast = ({ message, isOpen, onClose, onClick, type }) => {
   useEffect(() => {
     if (isOpen) {
       const timer = setTimeout(() => {
         onClose();
-      }, 3000);
+      }, 5000);
 
       return () => clearTimeout(timer);
     }
@@ -21,12 +21,21 @@ const Toast = ({ message, isOpen, onClose }) => {
         <span className=" font-inter! text-[16px] leading-[140%] text-black ">
           {message}
         </span>
-        <div className=" w-6 h-6 flex justify-center items-center bg-[#e5e5e5] rounded-full">
-          <IoCloseOutline
-            onClick={onClose}
-            className=" text-black text-[20px] cursor-pointer"
-          />
-        </div>
+        {type === "Action Toast" ? (
+          <button
+            onClick={() => onClick()}
+            className="bg-[#f2f2f2] cursor-pointer font-inter! leading-6 font-medium text-[16px] rounded-xl px-6! py-2! text-black "
+          >
+            Undo
+          </button>
+        ) : (
+          <div className=" w-6 h-6 flex cursor-pointer justify-center items-center bg-[#e5e5e5] rounded-full">
+            <IoCloseOutline
+              onClick={onClose}
+              className=" text-black text-[20px] cursor-pointer"
+            />
+          </div>
+        )}
       </div>
     </div>
   );

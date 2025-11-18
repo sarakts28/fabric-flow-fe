@@ -11,8 +11,9 @@
   --animate-toast-out: toast-out 0.4s ease-in forwards;
   --color-card-background: rgba(13, 177, 189, 1);
   --color-card-background-linear: linear-gradient(319.14deg, rgba(226, 226, 226, 0) 57.23%, rgba(255, 255, 255, 0.8) 99.84%);
-
+  --color-table-background: #EBFEFF;
   --shadow-card: 0px 3.2px 2.4px 0px rgba(0, 0, 0, 0.25);
+  --color-danger: #EE1D52;
 
   @keyframes toast-in {
     0% {

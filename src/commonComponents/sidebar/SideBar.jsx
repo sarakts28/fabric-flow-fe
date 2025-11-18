@@ -12,6 +12,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { logoutThunk } from "../../redux/thunk/authThunk";
 import { useNavigate } from "react-router-dom";
 import useAuth from "../../hooks/useAuth";
+import { IoMdMenu } from "react-icons/io";
 const SideBar = () => {
   const { width } = useScreenSize();
   const isMobile = width < 768;
@@ -40,19 +41,19 @@ const SideBar = () => {
 
   const sideBarTabs = [
     {
-      icon: <DashboardIcon size={20} />,
+      icon: <DashboardIcon size={24} />,
       label: "Dashboard",
-      url: "/",
+      url: "/dashboard",
     },
     {
       icon: <ReportsIcon size={24} />,
       label: "Reports",
-      url: "/reports",
+      url: "/dashboard/reports",
     },
     {
       icon: <InventoryIcon size={24} />,
       label: "Inventory",
-      url: "/inventory",
+      url: "/dashboard/inventory",
     },
   ];
 
@@ -60,7 +61,7 @@ const SideBar = () => {
     {
       icon: <IoSettings size={24} />,
       label: "Settings",
-      url: "/settings",
+      url: "/dashboard/settings",
     },
     {
       icon: <LogoutIcon size={24} />,
@@ -72,7 +73,7 @@ const SideBar = () => {
 
   return (
     <div
-      className={`bg-white ${
+      className={`bg-white shrink-0 ${
         isSmallSidebar ? "w-[70px]" : "w-[266px]"
       }  overflow-hidden border-r border-[#efefef] h-full      ${
         width < 768 ? " absolute top-0 left-0 h-full z-50!" : ""
@@ -80,20 +81,26 @@ const SideBar = () => {
     >
       <div
         className={`w-full ${
-          isSmallSidebar ? "px-3! py-6!" : "p-6!"
+          isSmallSidebar ? "px-3! py-7!" : "px-6! py-7!"
         }  overflow-hidden flex flex-col justify-between h-full relative`}
       >
         {/*  Icon That can resize the side bar */}
 
-        <div className=" absolute w-full z-20 top-1  -right-2 cursor-pointer flex justify-end">
+        <div
+          className={` absolute w-full z-20 ${
+            isSmallSidebar
+              ? "left-0 justify-center"
+              : " justify-end   right-0  pr-3!"
+          }  top-0    cursor-pointer flex `}
+        >
           <div
             onClick={() => setIsSmallSidebar(!isSmallSidebar)}
-            className="w-[30px] h-[30px] rounded-full flex justify-center items-center "
+            className="  "
           >
             {isSmallSidebar ? (
-              <LiaAngleLeftSolid className=" rotate-180 text-black text-[18px]" />
+              <IoMdMenu className=" text-black text-[25px]" />
             ) : (
-              <LiaAngleLeftSolid className=" text-black text-[18px]" />
+              <IoMdMenu className=" text-black text-[25px]" />
             )}
           </div>
         </div>
@@ -114,7 +121,7 @@ const SideBar = () => {
               </div>
               <div className={`ml-4! flex-1 ${isSmallSidebar ? "hidden" : ""}`}>
                 <p className="text-[16px] font-bold text-[#09090A]">
-                  {user?.user?.name}
+                  {user?.user?.name || user?.user?.username}
                 </p>
                 <p className="text-[14px]  text-[#1F1F22]">
                   {user?.user?.userType}

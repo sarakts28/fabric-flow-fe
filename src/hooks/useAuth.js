@@ -7,11 +7,9 @@ export default function useAuth() {
   const { user, isAuthenticated, loading, error } = useSelector(
     (state) => state.auth
   );
-  const hasFetched = useRef(false);
   useEffect(() => {
-    if (!hasFetched.current && !isAuthenticated) {
+    if (!isAuthenticated) {
       dispatch(fetchCurrentUserThunk());
-      hasFetched.current = true;
     }
   }, [dispatch]);
 
