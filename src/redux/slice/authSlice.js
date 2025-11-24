@@ -5,7 +5,7 @@ import {
   logoutThunk,
 } from "../thunk/authThunk";
 const initialState = {
-  user: null,
+  userDetail: null,
   loading: true,
   error: null,
   isAuthenticated: false,
@@ -24,7 +24,7 @@ const authSlice = createSlice({
       })
       .addCase(loginUserThunk.fulfilled, (state, action) => {
         state.loading = false;
-        state.user = action.payload;
+        state.userDetail = action.payload;
         state.isAuthenticated = true;
       })
       .addCase(loginUserThunk.rejected, (state, action) => {
@@ -33,8 +33,8 @@ const authSlice = createSlice({
       })
       // Logout Cases
       .addCase(logoutThunk.fulfilled, (state) => {
-        state.user = null;
-        state.loading = true;
+        state.userDetail = null;
+        state.loading = false;
         state.isAuthenticated = false;
       })
       .addCase(logoutThunk.pending, (state) => {
@@ -51,7 +51,7 @@ const authSlice = createSlice({
       })
       .addCase(fetchCurrentUserThunk.fulfilled, (state, action) => {
         state.loading = false;
-        state.user = action.payload;
+        state.userDetail = action.payload;
         state.isAuthenticated = true;
       })
       .addCase(fetchCurrentUserThunk.rejected, (state, action) => {

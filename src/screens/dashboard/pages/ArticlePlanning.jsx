@@ -4,13 +4,18 @@ import SearchField from "../../../commonComponents/SearchField";
 import { VscSettings } from "react-icons/vsc";
 import { CiCirclePlus } from "react-icons/ci";
 import Table from "../../../commonComponents/table/Table";
-import InventoryTableRow from "../components/InventoryTableRow";
 import CreateArticileModel from "../../../commonComponents/models/CreateArticileModel";
 import UpdateArticileModel from "../../../commonComponents/models/UpdateArticileModel";
 import DeleteModel from "../../../commonComponents/models/DeleteModel";
-import Toast from "../../../commonComponents/Toast";
 import FilterModel from "../../../commonComponents/models/FilterModel";
-const Inventory = () => {
+import Toast from "../../../commonComponents/Toast";
+import DetailModel from "../../../commonComponents/models/DetailModel";
+import ImagesModel from "../../../commonComponents/models/ImagesModel";
+import ArticlePlanningTableRow from "../components/ArticlePlanningTableRow";
+import { ARTICLES_PLANNING_TABLE_HEADERS } from "../../../constants/table_headers";
+import CreateArticilePlanningModel from "../../../commonComponents/models/CreateArticilePlanningModel";
+import UpdateArticilePlanningModel from "../../../commonComponents/models/UpdateArticilePlanningModel";
+const ArticlePlanning = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [filterModalOpen, setFilterModalOpen] = useState(false);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
@@ -18,13 +23,26 @@ const Inventory = () => {
   const [addNewArticleModalOpen, setAddNewArticleModalOpen] = useState(false);
   const [rowToDelete, setRowToDelete] = useState(null);
   const [toastMessage, setToastMessage] = useState({ message: "", type: "" });
+  const [imagesModelOpen, setImagesModelOpen] = useState(false);
+  const [imagesList, setImagesList] = useState([]);
+  const [rows, setRows] = useState([
+    {
+      id: 1,
+      articleName: "Article A",
+      routeName: "Route 1",
+      totalPayment: 400,
+      whenProcessStart: "2025-01-01",
+      whenProcessEnd: "2025-01-05",
+      action: { edit: true, delete: true },
+    },
+  ]);
+
   const [formData, setFormData] = useState({
-    article: "",
-    orderType: "Own",
-    client: "",
-    route: "",
-    fabric: "",
-    cost: "",
+    articleName: "",
+    routeName: "",
+    totalPayment: "",
+    whenProcessStart: "",
+    whenProcessEnd: "",
   });
   const [filterData, setFilterData] = useState({
     categoryType: "",
@@ -67,163 +85,53 @@ const Inventory = () => {
     setFilterModalOpen(false);
   };
 
-  const headers = [
-    { label: "Article No.", index: "articleNo" },
-    { label: "Route ID", index: "routeId" },
-    { label: "Processing Days", index: "processingDays" },
-    { label: "Status", index: "status" },
-    { label: "Due Date", index: "dueDate" },
-    { label: "Create Date", index: "createDate" },
-    { label: "Issue Payment Slip", index: "issuePaymentSlip" },
-    { label: "Client ID", index: "clientId" },
-    { label: "Total", index: "total" },
-    { label: "Packing Type", index: "packingType" },
-    { label: "Quantity", index: "quantity" },
-    { label: "Action", index: "action" },
-  ];
+  const handleAddRow = () => {
+    const newRow = {
+      id: Date.now(), // unique id
+      ...formData,
+      action: { edit: true, delete: true },
+    };
 
-  const rows = [
-    {
-      articleNo: 1,
-      routeId: 2200,
-      processingDays: 5,
-      status: "In Process",
-      dueDate: "02-Nov-2025",
-      createDate: "25-Oct-2025",
-      issuePaymentSlip: "+",
-      clientId: "#1122",
-      total: "45,000",
-      packingType: "2 Pieces",
-      quantity: 15,
-      action: { delete: true, edit: true },
-    },
-    {
-      articleNo: 1,
-      routeId: 2200,
-      processingDays: 5,
-      status: "In Process",
-      dueDate: "02-Nov-2025",
-      createDate: "25-Oct-2025",
-      issuePaymentSlip: "+",
-      clientId: "#1122",
-      total: "45,000",
-      packingType: "2 Pieces",
-      quantity: 15,
-      action: { delete: true, edit: true },
-    },
-    {
-      articleNo: 1,
-      routeId: 2200,
-      processingDays: 5,
-      status: "In Process",
-      dueDate: "02-Nov-2025",
-      createDate: "25-Oct-2025",
-      issuePaymentSlip: "+",
-      clientId: "#1122",
-      total: "45,000",
-      packingType: "2 Pieces",
-      quantity: 15,
-      action: { delete: true, edit: true },
-    },
-    {
-      articleNo: 1,
-      routeId: 2200,
-      processingDays: 5,
-      status: "In Process",
-      dueDate: "02-Nov-2025",
-      createDate: "25-Oct-2025",
-      issuePaymentSlip: "+",
-      clientId: "#1122",
-      total: "45,000",
-      packingType: "2 Pieces",
-      quantity: 15,
-      action: { delete: true, edit: true },
-    },
-    {
-      articleNo: 1,
-      routeId: 2200,
-      processingDays: 5,
-      status: "In Process",
-      dueDate: "02-Nov-2025",
-      createDate: "25-Oct-2025",
-      issuePaymentSlip: "+",
-      clientId: "#1122",
-      total: "45,000",
-      packingType: "2 Pieces",
-      quantity: 15,
-      action: { delete: true, edit: true },
-    },
-    {
-      articleNo: 1,
-      routeId: 2200,
-      processingDays: 5,
-      status: "In Process",
-      dueDate: "02-Nov-2025",
-      createDate: "25-Oct-2025",
-      issuePaymentSlip: "+",
-      clientId: "#1122",
-      total: "45,000",
-      packingType: "2 Pieces",
-      quantity: 15,
-      action: { delete: true, edit: true },
-    },
-    {
-      articleNo: 1,
-      routeId: 2200,
-      processingDays: 5,
-      status: "In Process",
-      dueDate: "02-Nov-2025",
-      createDate: "25-Oct-2025",
-      issuePaymentSlip: "+",
-      clientId: "#1122",
-      total: "45,000",
-      packingType: "2 Pieces",
-      quantity: 15,
-      action: { delete: true, edit: true },
-    },
-    {
-      articleNo: 1,
-      routeId: 2200,
-      processingDays: 5,
-      status: "In Process",
-      dueDate: "02-Nov-2025",
-      createDate: "25-Oct-2025",
-      issuePaymentSlip: "+",
-      clientId: "#1122",
-      total: "45,000",
-      packingType: "2 Pieces",
-      quantity: 15,
-      action: { delete: true, edit: true },
-    },
-    {
-      articleNo: 1,
-      routeId: 2200,
-      processingDays: 5,
-      status: "In Process",
-      dueDate: "02-Nov-2025",
-      createDate: "25-Oct-2025",
-      issuePaymentSlip: "+",
-      clientId: "#1122",
-      total: "45,000",
-      packingType: "2 Pieces",
-      quantity: 15,
-      action: { delete: true, edit: true },
-    },
-    {
-      articleNo: 1,
-      routeId: 2200,
-      processingDays: 5,
-      status: "In Process",
-      dueDate: "02-Nov-2025",
-      createDate: "25-Oct-2025",
-      issuePaymentSlip: "+",
-      clientId: "#1122",
-      total: "45,000",
-      packingType: "2 Pieces",
-      quantity: 15,
-      action: { delete: true, edit: true },
-    },
-  ];
+    setRows((prev) => [...prev, newRow]);
+    resetForm();
+    setAddNewArticleModalOpen(false);
+  };
+
+  const onDelete = (row) => {
+    const updated = rows.filter((item) => item.id !== row.id);
+    setRows(updated);
+  };
+
+  const onEdit = (row) => {
+    setEditRowId(row.id);
+    setFormData({
+      articleName: row.articleName,
+      routeName: row.routeName,
+      totalPayment: row.totalPayment,
+      whenProcessStart: row.whenProcessStart,
+      whenProcessEnd: row.whenProcessEnd,
+    });
+  };
+
+  const saveUpdatedRow = () => {
+    const updatedRows = rows.map((row) =>
+      row.id === editRowId ? { ...row, ...formData } : row
+    );
+
+    setRows(updatedRows);
+    setEditRowId(null);
+    resetForm();
+  };
+
+  const resetForm = () => {
+    setFormData({
+      articleName: "",
+      routeName: "",
+      totalPayment: "",
+      whenProcessStart: "",
+      whenProcessEnd: "",
+    });
+  };
 
   return (
     <>
@@ -261,26 +169,26 @@ const Inventory = () => {
           {/* -------------------------------------- */}
           <div className="mt-5!">
             <h4 className=" text-[24px] sm:text-[36px]   leading-[140%] font-medium text-black ">
-              Articles
+              Articles Planning
             </h4>
           </div>
           {/* -------------------------------------- */}
           <div className=" flex justify-end">
             <div className=" flex justify-center items-center bg-base-background text-white text-[12px] leading-[100%] py-2! px-4! cursor-pointer rounded-[45px] ">
-              Print
+              Export
             </div>
           </div>
           {/* --------------- Table ---------------- */}
           <div className=" mt-5! w-full overflow-hidden">
             <Table
               tableClassName={"min-w-[1328px]"}
-              tableHeader={headers}
+              tableHeader={ARTICLES_PLANNING_TABLE_HEADERS}
               tableData={
-                <InventoryTableRow
+                <ArticlePlanningTableRow
                   rows={rows}
                   onEdit={(row) => {
                     setEditModalOpen(true);
-                    console.log("Edit row:", row);
+                    onEdit(row);
                   }}
                   onDelete={(row) => {
                     setDeleteModalOpen(true);
@@ -296,39 +204,25 @@ const Inventory = () => {
       {/* Models */}
 
       {addNewArticleModalOpen && (
-        <CreateArticileModel
+        <CreateArticilePlanningModel
           formData={formData}
           setFormData={setFormData}
           onClose={() => {
             setAddNewArticleModalOpen(false);
-            setFormData({
-              article: "",
-              orderType: "Own",
-              client: "",
-              route: "",
-              fabric: "",
-              cost: "",
-            });
+            resetForm();
           }}
-          onSave={handleArticileSave}
+          onSave={handleAddRow}
         />
       )}
       {editModalOpen && (
-        <UpdateArticileModel
+        <UpdateArticilePlanningModel
           formData={formData}
           setFormData={setFormData}
           onClose={() => {
             setEditModalOpen(false);
-            setFormData({
-              article: "",
-              orderType: "Own",
-              client: "",
-              route: "",
-              fabric: "",
-              cost: "",
-            });
+            resetForm();
           }}
-          onUpdate={handleArticileUpdate}
+          onUpdate={saveUpdatedRow}
         />
       )}
       {deleteModalOpen && (
@@ -337,7 +231,7 @@ const Inventory = () => {
             setDeleteModalOpen(false);
             rowToDelete(null);
           }}
-          OnDelete={handleDelete}
+          OnDelete={() => onDelete(rowToDelete)}
         />
       )}
 
@@ -364,4 +258,4 @@ const Inventory = () => {
   );
 };
 
-export default Inventory;
+export default ArticlePlanning;

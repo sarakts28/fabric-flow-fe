@@ -1,9 +1,13 @@
 // components/ButtonLoader.jsx
 import React from "react";
 
-const ButtonLoader = () => {
+const ButtonLoader = ({ color, size }) => {
   return (
-    <div className="w-6 h-6 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+    <div
+      className={`${size ? size : "w-6 h-6"} border-2 ${
+        color ? color : "border-white"
+      }  border-t-transparent rounded-full animate-spin`}
+    ></div>
   );
 };
 

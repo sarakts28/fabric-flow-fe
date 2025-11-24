@@ -11,7 +11,7 @@ export default function useAuth() {
     if (!isAuthenticated) {
       dispatch(fetchCurrentUserThunk());
     }
-  }, [dispatch]);
+  }, []);
 
   return { user, isAuthenticated, loading, error };
 }

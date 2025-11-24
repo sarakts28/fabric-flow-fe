@@ -6,13 +6,15 @@ import InventoryIcon from "../../assets/icons/InventoryIcon";
 import LogoutIcon from "../../assets/icons/LogoutIcon";
 import { IoSettings } from "react-icons/io5";
 import SideBarItem from "./SideBarItem";
-import { LiaAngleLeftSolid } from "react-icons/lia";
 import useScreenSize from "../../hooks/useScreenResize";
 import { useDispatch, useSelector } from "react-redux";
 import { logoutThunk } from "../../redux/thunk/authThunk";
 import { useNavigate } from "react-router-dom";
-import useAuth from "../../hooks/useAuth";
 import { IoMdMenu } from "react-icons/io";
+import { PiArticle } from "react-icons/pi";
+import { GrPlan } from "react-icons/gr";
+import { CiRoute } from "react-icons/ci";
+import { BiCategory } from "react-icons/bi";
 const SideBar = () => {
   const { width } = useScreenSize();
   const isMobile = width < 768;
@@ -21,7 +23,7 @@ const SideBar = () => {
   const [isSmallSidebar, setIsSmallSidebar] = React.useState(
     width < 768 ? true : false
   );
-  const { user } = useSelector((state) => state.auth);
+  const { userDetail } = useSelector((state) => state.auth);
 
   useEffect(() => {
     if (width < 768) {
@@ -46,14 +48,24 @@ const SideBar = () => {
       url: "/dashboard",
     },
     {
-      icon: <ReportsIcon size={24} />,
-      label: "Reports",
-      url: "/dashboard/reports",
+      icon: <PiArticle size={24} />,
+      label: "Aticles",
+      url: "/article",
     },
     {
-      icon: <InventoryIcon size={24} />,
-      label: "Inventory",
-      url: "/dashboard/inventory",
+      icon: <GrPlan size={24} />,
+      label: "Aticles Planning",
+      url: "/article-planning",
+    },
+    {
+      icon: <CiRoute size={24} />,
+      label: "Routes",
+      url: "/routes",
+    },
+    {
+      icon: <BiCategory size={24} />,
+      label: "Categories",
+      url: "/categories",
     },
   ];
 
@@ -61,7 +73,7 @@ const SideBar = () => {
     {
       icon: <IoSettings size={24} />,
       label: "Settings",
-      url: "/dashboard/settings",
+      url: "/settings",
     },
     {
       icon: <LogoutIcon size={24} />,
@@ -121,10 +133,10 @@ const SideBar = () => {
               </div>
               <div className={`ml-4! flex-1 ${isSmallSidebar ? "hidden" : ""}`}>
                 <p className="text-[16px] font-bold text-[#09090A]">
-                  {user?.user?.name || user?.user?.username}
+                  {userDetail?.user?.name || userDetail?.user?.username}
                 </p>
                 <p className="text-[14px]  text-[#1F1F22]">
-                  {user?.user?.userType}
+                  {userDetail?.user?.userType}
                 </p>
               </div>
             </div>

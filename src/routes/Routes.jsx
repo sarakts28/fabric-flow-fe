@@ -6,8 +6,10 @@ import NotFound from "../screens/NotFound";
 import { Login } from "../screens/auth";
 import ProtectedRoutes from "./ProtectedRoutes";
 import PublicRoute from "./PublicRoutes";
-import Reports from "../screens/dashboard/pages/Reports";
-import Inventory from "../screens/dashboard/pages/Inventory";
+import Article from "../screens/dashboard/pages/Article";
+import ArticlePlanning from "../screens/dashboard/pages/ArticlePlanning";
+import Routes from "../screens/dashboard/pages/Routes";
+import Categories from "../screens/dashboard/pages/Categories";
 const router = createBrowserRouter([
   {
     element: (
@@ -18,7 +20,7 @@ const router = createBrowserRouter([
     path: "/login",
   },
   {
-    path: "/dashboard",
+    path: "/",
     element: (
       <ProtectedRoutes>
         <DashboardLayout />
@@ -26,10 +28,12 @@ const router = createBrowserRouter([
     ),
     errorElement: <NotFound />,
     children: [
-      { index: true, element: <Home /> },
-      { path: "reports", element: <Reports /> },
-      { path: "inventory", element: <Inventory /> },
+      { path: "dashboard", index: true, element: <Home /> },
       { path: "settings", element: <Settings /> },
+      { path: "article", element: <Article /> },
+      { path: "article-planning", element: <ArticlePlanning /> },
+      { path: "routes", element: <Routes /> },
+      { path: "categories", element: <Categories /> },
     ],
   },
 ]);

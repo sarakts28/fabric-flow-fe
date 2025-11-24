@@ -18,10 +18,6 @@ const Login = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  useEffect(() => {
-    console.log(message);
-  }, [message]);
-
   const handlechange = (e) => {
     const { name, value } = e.target;
     setData({
