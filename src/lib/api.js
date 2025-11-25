@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const API = axios.create({
-  baseURL: "https://unlacquered-nonanimatingly-agatha.ngrok-free.dev",
+  baseURL: "http://localhost:5000/api",
   withCredentials: true,
   headers: {
     "Content-Type": "application/json",
