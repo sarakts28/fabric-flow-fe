@@ -34,12 +34,12 @@ export function Dropdown({ label, options, value, onChange }) {
             <li
               key={opt}
               onClick={() => {
-                onChange(opt);
+                onChange(opt.value || opt);
                 setOpen(false);
               }}
               className="px-4! py-3! hover:bg-gray-100 cursor-pointer"
             >
-              {opt}
+              {opt.label || opt}
             </li>
           ))}
         </ul>

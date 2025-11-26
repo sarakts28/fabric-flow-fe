@@ -97,8 +97,8 @@ export default function ImagesModel({
                 )}
 
                 <motion.img
-                  key={`image-${index}-${images[index]}`}
-                  src={images[index]}
+                  key={`image-${index}-${images[index].url}`}
+                  src={images[index].url}
                   onLoad={() => setLoading(false)}
                   custom={direction}
                   variants={variants}

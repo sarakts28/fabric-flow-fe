@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Container from "../components/Container";
 import SearchField from "../../../commonComponents/SearchField";
 import { VscSettings } from "react-icons/vsc";
@@ -12,7 +12,19 @@ import FilterModel from "../../../commonComponents/models/FilterModel";
 import Toast from "../../../commonComponents/Toast";
 import DetailModel from "../../../commonComponents/models/DetailModel";
 import ImagesModel from "../../../commonComponents/models/ImagesModel";
+import { ARTICLES_TABLE_HEADERS } from "../../../constants/table_headers";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  createArticleThunk,
+  getAllArticlesThunk,
+} from "../../../redux/thunk/articleThunk";
+import { resetStatus } from "../../../redux/slice/articleSlice";
 const Article = () => {
+  const {
+    pagination: { current_page: page, page_limit, total_pages },
+    search,
+  } = useSelector((state) => state.article);
+  const dispatch = useDispatch();
   const [searchQuery, setSearchQuery] = useState("");
   const [filterModalOpen, setFilterModalOpen] = useState(false);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
@@ -27,12 +39,17 @@ const Article = () => {
     rowValue: "",
   });
   const [formData, setFormData] = useState({
-    article: "",
-    orderType: "Own",
-    client: "",
-    route: "",
-    fabric: "",
-    cost: "",
+    article_no: "",
+    article_name: "",
+    article_description: "",
+    category_id: "",
+    fabric_type: "",
+    measurement_type: "",
+    total_quantity: "",
+    designer_name: "",
+    price: "",
+    status: "",
+    article_image: [],
   });
   const [filterData, setFilterData] = useState({
     categoryType: "",
@@ -40,12 +57,48 @@ const Article = () => {
     articileCode: "",
   });
 
+  const resetFormData = () => {
+    setFormData({
+      article_no: "",
+      article_name: "",
+      article_description: "",
+      category_id: "",
+      fabric_type: "",
+      measurement_type: "",
+      total_quantity: "",
+      designer_name: "",
+      price: "",
+      status: "",
+      article_image: [],
+    });
+    setRowToDelete(null);
+    dispatch(resetStatus());
+  };
+
   const handleSearch = () => {
     console.log("Searching for:", searchQuery);
   };
 
   const handleArticileSave = () => {
-    logConsole.log("Article saved:", formData);
+    dispatch(createArticleThunk(formData))
+      .unwrap()
+      .then((res) => {
+        setAddNewArticleModalOpen(false);
+        setToastMessage({
+          message: "Articles created successfully!",
+          type: "",
+        });
+        resetFormData();
+      })
+      .catch((error) => {
+        setAddNewArticleModalOpen(false);
+
+        setToastMessage({
+          message: error || "Failed to create route.",
+          type: "",
+        });
+        resetFormData();
+      });
   };
 
   const handleArticileUpdate = () => {
@@ -75,194 +128,10 @@ const Article = () => {
     setFilterModalOpen(false);
   };
 
-  const headers = [
-    { label: "Article No.", index: "articleNo" },
-    { label: "Article Name", index: "articleName" },
-    { label: "Article Description", index: "articleDescription" },
-    { label: "Images", index: "images" },
-    { label: "Category Type", index: "categoryType" },
-    { label: "Fabric Type", index: "fabricType" },
-    { label: "Measurement Type", index: "measurementType" },
-    { label: "Total Quantity", index: "totalQuantity" },
-    { label: "Designer Name", index: "designerName" },
-    { label: "Price", index: "price" },
-    { label: "status", index: "status" },
-    { label: "Action", index: "action" },
-  ];
-
-  const rows = [
-    {
-      articleNo: 1,
-      articleName: "Classic Linen Shirt",
-      articleDescription: "A breathable premium linen shirt ideal for summer.",
-      images: [
-        "https://picsum.photos/id/101/500/500",
-        "https://picsum.photos/id/102/500/500",
-        "https://picsum.photos/id/104/500/500",
-      ],
-      categoryType: "Shirt",
-      fabricType: "Linen",
-      measurementType: "Medium",
-      totalQuantity: 120,
-      designerName: "John Doe",
-      price: "4,500",
-      status: "Available",
-      action: { delete: true, edit: true },
-    },
-    {
-      articleNo: 2,
-      articleName: "Denim Jacket",
-      articleDescription: "Blue-wash denim jacket with modern fit.",
-      images: [
-        "https://picsum.photos/id/103/500/500",
-        "https://picsum.photos/id/104/500/500",
-      ],
-      categoryType: "Jacket",
-      fabricType: "Denim",
-      measurementType: "Large",
-      totalQuantity: 80,
-      designerName: "Sarah Khan",
-      price: "8,200",
-      status: "In Stock",
-      action: { delete: true, edit: true },
-    },
-    {
-      articleNo: 3,
-      articleName: "Cotton Kurta",
-      articleDescription: "Soft and comfortable traditional cotton kurta.",
-      images: [
-        "https://picsum.photos/id/105/500/500",
-        "https://picsum.photos/id/106/500/500",
-      ],
-      categoryType: "Kurta",
-      fabricType: "Cotton",
-      measurementType: "Small",
-      totalQuantity: 60,
-      designerName: "Imran Ali",
-      price: "3,200",
-      status: "Available",
-      action: { delete: true, edit: true },
-    },
-    {
-      articleNo: 4,
-      articleName: "Formal Pant",
-      articleDescription: "Slim-fit formal pants suitable for office wear.",
-      images: [
-        "https://picsum.photos/id/107/500/500",
-        "https://picsum.photos/id/108/500/500",
-      ],
-      categoryType: "Pant",
-      fabricType: "Tropical Wool",
-      measurementType: "32",
-      totalQuantity: 150,
-      designerName: "Ayesha Noor",
-      price: "5,900",
-      status: "In Stock",
-      action: { delete: true, edit: true },
-    },
-    {
-      articleNo: 5,
-      articleName: "Silk Scarf",
-      articleDescription: "Luxurious printed silk scarf.",
-      images: [
-        "https://picsum.photos/id/109/500/500",
-        "https://picsum.photos/id/110/500/500",
-      ],
-      categoryType: "Accessory",
-      fabricType: "Silk",
-      measurementType: "Standard",
-      totalQuantity: 200,
-      designerName: "Hina Rahman",
-      price: "2,000",
-      status: "Available",
-      action: { delete: true, edit: true },
-    },
-    {
-      articleNo: 6,
-      articleName: "Wool Coat",
-      articleDescription: "Premium long wool coat for winter.",
-      images: [
-        "https://picsum.photos/id/111/500/500",
-        "https://picsum.photos/id/112/500/500",
-      ],
-      categoryType: "Coat",
-      fabricType: "Wool",
-      measurementType: "XL",
-      totalQuantity: 40,
-      designerName: "Adnan Malik",
-      price: "15,500",
-      status: "Out of Stock",
-      action: { delete: true, edit: true },
-    },
-    {
-      articleNo: 7,
-      articleName: "Sports T-Shirt",
-      articleDescription: "Breathable polyester sports t-shirt.",
-      images: [
-        "https://picsum.photos/id/113/500/500",
-        "https://picsum.photos/id/114/500/500",
-      ],
-      categoryType: "T-Shirt",
-      fabricType: "Polyester",
-      measurementType: "Large",
-      totalQuantity: 300,
-      designerName: "Hamza Ahmed",
-      price: "1,800",
-      status: "Available",
-      action: { delete: true, edit: true },
-    },
-    {
-      articleNo: 8,
-      articleName: "Chiffon Maxi",
-      articleDescription: "Elegant chiffon maxi dress for events.",
-      images: [
-        "https://picsum.photos/id/115/500/500",
-        "https://picsum.photos/id/116/500/500",
-      ],
-      categoryType: "Dress",
-      fabricType: "Chiffon",
-      measurementType: "Medium",
-      totalQuantity: 35,
-      designerName: "Zara Sheikh",
-      price: "12,000",
-      status: "Available",
-      action: { delete: true, edit: true },
-    },
-    {
-      articleNo: 9,
-      articleName: "Casual Hoodie",
-      articleDescription: "Comfortable fleece-lined hoodie.",
-      images: [
-        "https://picsum.photos/id/117/500/500",
-        "https://picsum.photos/id/118/500/500",
-      ],
-      categoryType: "Hoodie",
-      fabricType: "Fleece",
-      measurementType: "Large",
-      totalQuantity: 90,
-      designerName: "Faisal Qureshi",
-      price: "4,200",
-      status: "In Stock",
-      action: { delete: true, edit: true },
-    },
-    {
-      articleNo: 10,
-      articleName: "Premium Polo Shirt",
-      articleDescription: "High-quality cotton polo for casual wear.",
-      images: [
-        "https://picsum.photos/id/119/500/500",
-        "https://picsum.photos/id/120/500/500",
-      ],
-      categoryType: "Polo",
-      fabricType: "Cotton",
-      measurementType: "Medium",
-      totalQuantity: 180,
-      designerName: "Rizwan Malik",
-      price: "3,900",
-      status: "Available",
-      action: { delete: true, edit: true },
-    },
-  ];
+  useEffect(() => {
+    if (!page) return;
+    dispatch(getAllArticlesThunk({ page, page_limit, search }));
+  }, [page_limit, page, search]);
 
   return (
     <>
@@ -312,14 +181,13 @@ const Article = () => {
           {/* --------------- Table ---------------- */}
           <div className=" mt-5! w-full overflow-hidden">
             <Table
-              tableClassName={"min-w-[1328px]"}
-              tableHeader={headers}
+              tableClassName={"!min-w-[1960px]"}
+              tableHeader={ARTICLES_TABLE_HEADERS}
               tableData={
                 <ArticleTableRow
-                  rows={rows}
                   onEdit={(row) => {
                     setEditModalOpen(true);
-                    console.log("Edit row:", row);
+                    setFormData(row);
                   }}
                   onDelete={(row) => {
                     setDeleteModalOpen(true);
@@ -343,14 +211,7 @@ const Article = () => {
           setFormData={setFormData}
           onClose={() => {
             setAddNewArticleModalOpen(false);
-            setFormData({
-              article: "",
-              orderType: "Own",
-              client: "",
-              route: "",
-              fabric: "",
-              cost: "",
-            });
+            resetFormData();
           }}
           onSave={handleArticileSave}
         />

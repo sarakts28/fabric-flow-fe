@@ -9,6 +9,7 @@ import ButtonLoader from "../../../commonComponents/loader/ButtonLoader";
 
 const CategoryTableRow = ({ className, onDelete, onEdit }) => {
   const { loading, list: rows } = useSelector((state) => state.categories);
+  const { userDetail } = useSelector((state) => state.auth);
 
   if (loading.list) {
     return (
@@ -39,32 +40,16 @@ const CategoryTableRow = ({ className, onDelete, onEdit }) => {
 
         {/* ACTIONS */}
         <td className="text-center text-[14px]! text-black p-2! flex items-center justify-center gap-3">
-          <span
-            className=" text-black cursor-pointer"
-            onClick={() => {
-              onDelete(row);
-            }}
-          >
-            <DeleteIcon size={18} />{" "}
-          </span>
-
-          {/* <span
-            className=" text-black cursor-pointer"
-            onClick={() => {
-              onEdit(row);
-            }}
-          >
-            <EditIcon size={14} />
-          </span> */}
-
-          {/* <span
-            className=" text-black cursor-pointer"
-            onClick={() => {
-              console.log("print article", row);
-            }}
-          >
-            <IoPrintOutline size={20} />
-          </span> */}
+          {isRoleAllowed(["designer"], userDetail.user.userType) && (
+            <span
+              className=" text-black cursor-pointer"
+              onClick={() => {
+                onDelete(row);
+              }}
+            >
+              <DeleteIcon size={18} />{" "}
+            </span>
+          )}
         </td>
       </TableRow>
     ))

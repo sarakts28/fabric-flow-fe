@@ -20,3 +20,20 @@ export const ARTICLES_PLANNING_TABLE_HEADERS = [
   { label: "When Process End", index: "whenProcessEnd" },
   { label: "Action", index: "action" },
 ];
+
+export const ARTICLES_TABLE_HEADERS = [
+  { label: "Article No.", index: "articleNo" },
+  { label: "Article Name", index: "articleName" },
+  { label: "Article Description", index: "articleDescription" },
+  { label: "Images", index: "images" },
+  { label: "Active Status", index: "activeStatus" },
+  { label: "Fabric Type", index: "fabricType" },
+  { label: "Measurement Type", index: "measurementType" },
+  { label: "Total Quantity", index: "totalQuantity" },
+  { label: "Designer Name", index: "designerName" },
+  { label: "Stores Assigned", index: "storesAssigned" },
+  { label: "Quantity Dispatched", index: "quantityDispatched" },
+  { label: "Price", index: "price" },
+  { label: "status", index: "status" },
+  { label: "Action", index: "action" },
+];

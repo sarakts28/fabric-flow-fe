@@ -2,13 +2,13 @@ import React, { useEffect } from "react";
 import TableRow from "../../../commonComponents/table/TableRow";
 import DeleteIcon from "../../../assets/icons/DeleteIcon";
 import EditIcon from "../../../assets/icons/EditIcon";
-import { IoPrintOutline } from "react-icons/io5";
 import { useSelector } from "react-redux";
 import { isRoleAllowed } from "../../../lib/isAllowedRoles";
 import ButtonLoader from "../../../commonComponents/loader/ButtonLoader";
 
 const RouteTableRow = ({ className, onDelete, onEdit }) => {
   const { loading, list: rows } = useSelector((state) => state.route);
+  const { userDetail } = useSelector((state) => state.auth);
 
   if (loading.list) {
     return (
@@ -45,34 +45,28 @@ const RouteTableRow = ({ className, onDelete, onEdit }) => {
           {row.lead_time_days}
         </td>
 
-        {/* ACTIONS */}
         <td className="text-center text-[14px]! text-black p-2! flex items-center justify-center gap-3">
-          <span
-            className=" text-black cursor-pointer"
-            onClick={() => {
-              onDelete(row);
-            }}
-          >
-            <DeleteIcon size={18} />{" "}
-          </span>
+          {isRoleAllowed(["admin"], userDetail.user.userType) && (
+            <>
+              <span
+                className=" text-black cursor-pointer"
+                onClick={() => {
+                  onDelete(row);
+                }}
+              >
+                <DeleteIcon size={18} />{" "}
+              </span>
 
-          <span
-            className=" text-black cursor-pointer"
-            onClick={() => {
-              onEdit(row);
-            }}
-          >
-            <EditIcon size={14} />
-          </span>
-
-          <span
-            className=" text-black cursor-pointer"
-            onClick={() => {
-              console.log("print article", row);
-            }}
-          >
-            <IoPrintOutline size={20} />
-          </span>
+              <span
+                className=" text-black cursor-pointer"
+                onClick={() => {
+                  onEdit(row);
+                }}
+              >
+                <EditIcon size={14} />
+              </span>
+            </>
+          )}
         </td>
       </TableRow>
     ))

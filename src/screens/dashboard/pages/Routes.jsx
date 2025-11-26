@@ -130,7 +130,7 @@ const Routes = () => {
 
   useEffect(() => {
     if (!page) return;
-    dispatch(fetchPlanningRoutes({ page, page_limit, searchQuery }));
+    dispatch(fetchPlanningRoutes({ page, page_limit, search }));
   }, [page_limit, page, search]);
 
   return (
@@ -164,12 +164,6 @@ const Routes = () => {
             <h4 className=" text-[24px] sm:text-[36px]   leading-[140%] font-medium text-black ">
               Routes
             </h4>
-          </div>
-          {/* -------------------------------------- */}
-          <div className=" flex justify-end">
-            <div className=" flex justify-center items-center bg-base-background text-white text-[12px] leading-[100%] py-2! px-4! cursor-pointer rounded-[45px] ">
-              Export
-            </div>
           </div>
           {/* --------------- Table ---------------- */}
           <div className=" mt-5! w-full overflow-hidden">

@@ -55,7 +55,7 @@ const Categories = () => {
 
   useEffect(() => {
     if (!page) return;
-    dispatch(fetchCategoriesThunk({ page, page_limit, searchQuery }));
+    dispatch(fetchCategoriesThunk({ page, page_limit, search }));
   }, [page_limit, page, search]);
 
   const handleSave = () => {
@@ -131,12 +131,7 @@ const Categories = () => {
               Categories
             </h4>
           </div>
-          {/* -------------------------------------- */}
-          <div className=" flex justify-end">
-            <div className=" flex justify-center items-center bg-base-background text-white text-[12px] leading-[100%] py-2! px-4! cursor-pointer rounded-[45px] ">
-              Export
-            </div>
-          </div>
+
           {/* --------------- Table ---------------- */}
           <div className=" mt-5! w-full overflow-hidden">
             <Table
