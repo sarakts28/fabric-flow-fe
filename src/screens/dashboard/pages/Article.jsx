@@ -16,12 +16,20 @@ import { ARTICLES_TABLE_HEADERS } from "../../../constants/table_headers";
 import { useDispatch, useSelector } from "react-redux";
 import {
   createArticleThunk,
+  deleteArticalThunk,
   getAllArticlesThunk,
+  updateArticleThunk,
 } from "../../../redux/thunk/articleThunk";
-import { resetStatus } from "../../../redux/slice/articleSlice";
+import {
+  resetStatus,
+  setPage,
+  setPageLimit,
+  setSearch,
+} from "../../../redux/slice/articleSlice";
+import Pagination from "../../../commonComponents/Pagination";
 const Article = () => {
   const {
-    pagination: { current_page: page, page_limit, total_pages },
+    pagination: { current_page: page, page_limit: limit, total_pages },
     search,
   } = useSelector((state) => state.article);
   const dispatch = useDispatch();
@@ -29,6 +37,14 @@ const Article = () => {
   const [filterModalOpen, setFilterModalOpen] = useState(false);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [editModalOpen, setEditModalOpen] = useState(false);
+  const [editFormData, setEditFormData] = useState({
+    _id: "",
+    status: "",
+    active_status: true,
+    total_stores_assigned: "",
+    total_quantity_dispatched: "",
+    images: [],
+  });
   const [addNewArticleModalOpen, setAddNewArticleModalOpen] = useState(false);
   const [rowToDelete, setRowToDelete] = useState(null);
   const [toastMessage, setToastMessage] = useState({ message: "", type: "" });
@@ -52,9 +68,9 @@ const Article = () => {
     article_image: [],
   });
   const [filterData, setFilterData] = useState({
-    categoryType: "",
-    fabricType: "",
-    articileCode: "",
+    article_no: "",
+    fabric_type: "",
+    status: "",
   });
 
   const resetFormData = () => {
@@ -71,12 +87,15 @@ const Article = () => {
       status: "",
       article_image: [],
     });
+    setEditFormData({
+      _id: "",
+      status: "",
+      active_status: "",
+      total_stores_assigned: "",
+      total_quantity_dispatched: "",
+    });
     setRowToDelete(null);
     dispatch(resetStatus());
-  };
-
-  const handleSearch = () => {
-    console.log("Searching for:", searchQuery);
   };
 
   const handleArticileSave = () => {
@@ -101,37 +120,69 @@ const Article = () => {
       });
   };
 
-  const handleArticileUpdate = () => {
-    logConsole.log("Article updated:", formData);
+  const handleUpdate = (id, body) => {
+    dispatch(
+      updateArticleThunk({
+        id: id,
+        body: body,
+      })
+    )
+      .unwrap()
+      .then((res) => {
+        setEditModalOpen(false);
+        setToastMessage({ message: "Article Updated successfully!", type: "" });
+        resetFormData();
+      })
+      .catch((error) => {
+        setEditModalOpen(false);
+        setToastMessage({
+          message: error || "Failed to update route.",
+          type: "",
+        });
+        resetFormData();
+      });
   };
 
   const handleDelete = () => {
-    console.log("Deleting row:", rowToDelete);
-    setDeleteModalOpen(false);
-    setRowToDelete(null);
-    setToastMessage({
-      message: "Item Deleted Successfully",
-      type: "Action Toast",
-    });
-  };
+    dispatch(deleteArticalThunk(rowToDelete._id))
+      .unwrap()
+      .then((res) => {
+        setDeleteModalOpen(false);
+        setToastMessage({ message: "Item Deleted Successfully", type: "" });
+        resetFormData();
+      })
+      .catch((error) => {
+        console.log(error, "error");
 
-  const handleUndoDelete = () => {
-    console.log("Undo delete action");
-    setToastMessage({
-      message: "Deleted item recovered successfully",
-      type: "",
-    });
+        setDeleteModalOpen(false);
+        setToastMessage({
+          message: "Failed to Delete Article.",
+          type: "",
+        });
+        resetFormData();
+      });
   };
 
   const hanldeFilterData = () => {
-    console.log("Filtering with:", filterData);
+    dispatch(getAllArticlesThunk({ page, limit, search, ...filterData }));
     setFilterModalOpen(false);
   };
 
+  const handleSearch = () => {
+    dispatch(setSearch(searchQuery));
+  };
+
+  const handlePageChange = (page) => {
+    dispatch(setPage(page));
+  };
+
+  const handlePageLimitChange = (limit) => {
+    dispatch(setPageLimit(limit));
+  };
+
   useEffect(() => {
-    if (!page) return;
-    dispatch(getAllArticlesThunk({ page, page_limit, search }));
-  }, [page_limit, page, search]);
+    dispatch(getAllArticlesThunk({ page, limit, search }));
+  }, [limit, page, search]);
 
   return (
     <>
@@ -187,7 +238,14 @@ const Article = () => {
                 <ArticleTableRow
                   onEdit={(row) => {
                     setEditModalOpen(true);
-                    setFormData(row);
+                    setEditFormData({
+                      _id: row._id,
+                      status: row.status,
+                      active_status: row.active_status,
+                      total_stores_assigned: row.total_stores_assigned,
+                      total_quantity_dispatched: row.total_quantity_dispatched,
+                      article_images: row.article_images,
+                    });
                   }}
                   onDelete={(row) => {
                     setDeleteModalOpen(true);
@@ -199,6 +257,15 @@ const Article = () => {
                 />
               }
             />
+            <div className="">
+              <Pagination
+                page={page}
+                totalPages={total_pages}
+                pageLimit={limit}
+                onPageChange={handlePageChange}
+                onLimitChange={handlePageLimitChange}
+              />
+            </div>
           </div>
         </div>
       </Container>
@@ -218,27 +285,20 @@ const Article = () => {
       )}
       {editModalOpen && (
         <UpdateArticileModel
-          formData={formData}
-          setFormData={setFormData}
+          formData={editFormData}
+          setFormData={setEditFormData}
           onClose={() => {
             setEditModalOpen(false);
-            setFormData({
-              article: "",
-              orderType: "Own",
-              client: "",
-              route: "",
-              fabric: "",
-              cost: "",
-            });
+            resetFormData();
           }}
-          onUpdate={handleArticileUpdate}
+          onUpdate={handleUpdate}
         />
       )}
       {deleteModalOpen && (
         <DeleteModel
           cancel={() => {
             setDeleteModalOpen(false);
-            rowToDelete(null);
+            setRowToDelete(null);
           }}
           OnDelete={handleDelete}
         />
@@ -258,8 +318,6 @@ const Article = () => {
         <Toast
           message={toastMessage.message}
           isOpen={toastMessage.message !== ""}
-          onClick={handleUndoDelete}
-          type={toastMessage.type}
           onClose={() => setToastMessage({ message: "", type: "" })}
         />
       )}

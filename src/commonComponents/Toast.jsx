@@ -19,7 +19,7 @@ const Toast = ({ message, isOpen, onClose, onClick, type }) => {
         }    shrink-0 h-fit  flex gap-2.5   rounded-2xl bg-white items-center justify-end    shadow-toast  s py-3! px-4!`}
       >
         <span className=" font-inter! text-[16px] leading-[140%] text-black ">
-          {message}
+          {typeof message === "string" ? message : JSON.stringify(message)}
         </span>
         {type === "Action Toast" ? (
           <button

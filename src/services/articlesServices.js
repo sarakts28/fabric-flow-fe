@@ -40,7 +40,11 @@ export const getRawArticles = async () => {
 
 export const updateArticle = async (id, articleData) => {
   try {
-    const res = await API.put(`/article/${id}`, articleData);
+    const res = await API.patch(`/article/${id}`, articleData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
     return res.data.data;
   } catch (error) {
     throw { message: handleApiError(error) };
@@ -49,9 +53,16 @@ export const updateArticle = async (id, articleData) => {
 
 export const deleteArticle = async (id) => {
   try {
-    const res = await API.delete(`/article/${id}`);
-    return res.data.data;
+    await API.delete(`/article/${id}`);
+
+    return {
+      id,
+      success: true,
+      message: "Category deleted successfully",
+    };
   } catch (error) {
+    console.log(error);
+
     throw { message: handleApiError(error) };
   }
 };

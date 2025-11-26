@@ -22,7 +22,9 @@ export function Dropdown({ label, options, value, onChange }) {
         className="border border-[#D0D5DD] rounded-xl px-4! py-3! cursor-pointer bg-white flex justify-between items-center  transition"
         onClick={() => setOpen(!open)}
       >
-        <span>{value || "Select"}</span>
+        <span>
+          {typeof value === "object" ? value.label : value || "Select"}
+        </span>
         <span>
           <IoIosArrowDown />
         </span>
@@ -32,7 +34,7 @@ export function Dropdown({ label, options, value, onChange }) {
         <ul className="absolute mt-2! w-full bg-white border border-[#D0D5DD] rounded-xl shadow-lg z-10 max-h-60 overflow-auto animate-fadeIn">
           {options.map((opt) => (
             <li
-              key={opt}
+              key={opt.value || opt}
               onClick={() => {
                 onChange(opt.value || opt);
                 setOpen(false);

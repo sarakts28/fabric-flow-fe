@@ -85,7 +85,11 @@ const ArticleTableRow = ({
                   return (
                     <img
                       key={index}
-                      src={imgSrc.url}
+                      src={
+                        imgSrc.url.includes("http://localhost:5000")
+                          ? imgSrc.url
+                          : `http://localhost:5000${imgSrc.url}`
+                      }
                       alt={`Article ${info.article_no} - Image`}
                       className={`absolute w-10 h-10 object-cover rounded-md shadow ${positions[index]} ${offsets[index]}`}
                     />
@@ -145,7 +149,7 @@ const ArticleTableRow = ({
             <div className="flex items-center justify-center gap-3">
               <span
                 className="text-black cursor-pointer"
-                onClick={() => onDelete(row)}
+                onClick={() => onDelete(info)}
               >
                 <DeleteIcon size={18} />
               </span>
@@ -153,7 +157,7 @@ const ArticleTableRow = ({
               {isRoleAllowed(["admin"], userDetail.user.userType) && (
                 <span
                   className="text-black cursor-pointer"
-                  onClick={() => onEdit(row)}
+                  onClick={() => onEdit(info)}
                 >
                   <EditIcon size={14} />
                 </span>

@@ -1,6 +1,8 @@
 import React from "react";
 import { Dropdown } from "../DropdownInput";
 import { IoMdClose } from "react-icons/io";
+import InputField from "../InputField";
+import { ARTICLE_ENUM_VALUES } from "../../constants/enum_constant";
 
 const FilterModel = ({ filterData, setFilterData, onFilter, onClose }) => {
   const updateField = (field, value) => {
@@ -21,30 +23,26 @@ const FilterModel = ({ filterData, setFilterData, onFilter, onClose }) => {
           </span>
         </div>
         <div className="grid grid-col-1 gap-10 mt-6!">
-          <Dropdown
-            label="Category Type"
-            options={["Type 1", "Type 2", "Type 3"]}
-            value={filterData.categoryType}
-            onChange={(v) => updateField("categoryType", v)}
+          <InputField
+            label="Article No"
+            name="article_no"
+            placeholder="--"
+            value={filterData.article_no}
+            onChange={updateField}
+            type="text"
           />
           <Dropdown
             label="Fabric Type"
-            options={["stitch", "unstitch"]}
-            value={filterData.fabricType}
-            onChange={(v) => updateField("fabricType", v)}
+            options={ARTICLE_ENUM_VALUES.FABRIC_TYPES}
+            value={filterData.fabric_type}
+            onChange={(v) => updateField("fabric_type", v)}
           />
-          <div>
-            <label className="block mb-2! text-gray-600 text-sm">
-              Articile Code
-            </label>
-            <input
-              placeholder="--"
-              type="text"
-              className="border border-[#D0D5DD] w-full outline-none rounded-xl px-4! py-3!"
-              value={filterData.articileCode}
-              onChange={(e) => updateField("articileCode", e.target.value)}
-            />
-          </div>
+          <Dropdown
+            label="Status"
+            options={ARTICLE_ENUM_VALUES.STATUS_TYPES}
+            value={filterData.status}
+            onChange={(v) => updateField("status", v)}
+          />
         </div>
         <div className="w-full flex justify-center items-center">
           <div

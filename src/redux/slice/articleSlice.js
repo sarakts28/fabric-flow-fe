@@ -64,7 +64,7 @@ const articleSlice = createSlice({
         state.loading.list = false;
         state.list = action.payload.result;
         state.count = action.payload.count;
-        state.pagination = action.payload.pagination;
+        Object.assign(state.pagination, action.payload.pagination);
       })
       .addCase(getAllArticlesThunk.rejected, (state, action) => {
         state.loading.list = false;
@@ -125,11 +125,18 @@ const articleSlice = createSlice({
       .addCase(updateArticleThunk.fulfilled, (state, action) => {
         state.loading.update = false;
         state.successMessage = "Article updated";
+        const getId = (item) => item._id ?? item.article_info?._id;
+        const targetId = action.payload._id;
 
-        const index = state.list.findIndex(
-          (item) => item._id === action.payload._id
-        );
-        if (index !== -1) state.list[index] = action.payload;
+        const item = state.list.find((i) => getId(i) === targetId);
+
+        if (item) {
+          if (item.article_info) {
+            item.article_info = action.payload;
+          } else {
+            Object.assign(item, action.payload);
+          }
+        }
       })
 
       .addCase(updateArticleThunk.rejected, (state, action) => {
@@ -147,7 +154,10 @@ const articleSlice = createSlice({
         state.loading.delete = false;
         state.successMessage = "Article deleted";
 
-        state.list = state.list.filter((i) => i._id !== action.payload.id);
+        const id = action.payload.id;
+        state.list = state.list.filter(
+          (i) => i._id !== id && i.article_info?._id !== id
+        );
       })
 
       .addCase(deleteArticalThunk.rejected, (state, action) => {
