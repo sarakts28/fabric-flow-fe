@@ -1,21 +1,40 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Container from "../components/Container";
 import SearchField from "../../../commonComponents/SearchField";
 import { VscSettings } from "react-icons/vsc";
 import { CiCirclePlus } from "react-icons/ci";
 import Table from "../../../commonComponents/table/Table";
-import CreateArticileModel from "../../../commonComponents/models/CreateArticileModel";
-import UpdateArticileModel from "../../../commonComponents/models/UpdateArticileModel";
 import DeleteModel from "../../../commonComponents/models/DeleteModel";
-import FilterModel from "../../../commonComponents/models/FilterModel";
 import Toast from "../../../commonComponents/Toast";
-import DetailModel from "../../../commonComponents/models/DetailModel";
-import ImagesModel from "../../../commonComponents/models/ImagesModel";
 import ArticlePlanningTableRow from "../components/ArticlePlanningTableRow";
 import { ARTICLES_PLANNING_TABLE_HEADERS } from "../../../constants/table_headers";
 import CreateArticilePlanningModel from "../../../commonComponents/models/CreateArticilePlanningModel";
 import UpdateArticilePlanningModel from "../../../commonComponents/models/UpdateArticilePlanningModel";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  createArticlePlanningThunk,
+  deleteArticlePlanningThunk,
+  getAllArticlePlanningThunk,
+  updateArticlePlanningThunk,
+  updateOrderSlipThunk,
+  updateStatusThunk,
+} from "../../../redux/thunk/articlePlanningThunk";
+import {
+  resetStatus,
+  setPage,
+  setPageLimit,
+  setSearch,
+} from "../../../redux/slice/articlePlanningSlice";
+import { formatDate } from "../../../lib/utilityFn";
+import Pagination from "../../../commonComponents/Pagination";
+import ArticalPlanningFilterModel from "../../../commonComponents/models/ArticalPlanningFilterModel";
+import StatusUpdateModel from "../../../commonComponents/models/StatusUpdateModel";
+import OrderSlipUpdate from "../../../commonComponents/models/OrderSlipUpdate";
 const ArticlePlanning = () => {
+  const {
+    pagination: { current_page: page, page_limit: limit, total_pages },
+    search,
+  } = useSelector((state) => state.articlePlanning);
   const [searchQuery, setSearchQuery] = useState("");
   const [filterModalOpen, setFilterModalOpen] = useState(false);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
@@ -23,115 +42,217 @@ const ArticlePlanning = () => {
   const [addNewArticleModalOpen, setAddNewArticleModalOpen] = useState(false);
   const [rowToDelete, setRowToDelete] = useState(null);
   const [toastMessage, setToastMessage] = useState({ message: "", type: "" });
-  const [imagesModelOpen, setImagesModelOpen] = useState(false);
-  const [imagesList, setImagesList] = useState([]);
-  const [rows, setRows] = useState([
-    {
-      id: 1,
-      articleName: "Article A",
-      routeName: "Route 1",
-      totalPayment: 400,
-      whenProcessStart: "2025-01-01",
-      whenProcessEnd: "2025-01-05",
-      action: { edit: true, delete: true },
-    },
-  ]);
+  const [status, setStatus] = useState({
+    id: "",
+    status: "",
+    isModelOpen: false,
+  });
+  const [orderSlip, setOrderSlip] = useState({
+    id: "",
+    order_slip: "",
+    isModelOpen: false,
+  });
+  const dispatch = useDispatch();
 
   const [formData, setFormData] = useState({
-    articleName: "",
-    routeName: "",
-    totalPayment: "",
-    whenProcessStart: "",
-    whenProcessEnd: "",
+    article_id: "",
+    planningRoute_id: "",
+    total_payment: "",
+    when_process_end: "",
+    when_process_start: "",
   });
+
+  const [editFormData, setEditFormData] = useState({
+    id: "",
+    order_slip: "",
+    status: "",
+    total_payment: "",
+    when_process_end: "",
+    when_process_start: "",
+    planningName: "",
+  });
+
   const [filterData, setFilterData] = useState({
-    categoryType: "",
-    fabricType: "",
-    articileCode: "",
+    article_id: "",
+    planningRoute_id: "",
+    status: "",
+    order_slip: "",
   });
 
-  const handleSearch = () => {
-    console.log("Searching for:", searchQuery);
-  };
+  const resetFormData = () => {
+    setFormData({
+      article_id: "",
+      planningRoute_id: "",
+      total_payment: "",
+      when_process_end: "",
+      when_process_start: "",
+    });
+    setEditFormData({
+      id: "",
+      order_slip: "",
+      status: "",
+      total_payment: "",
+      when_process_end: "",
+      when_process_start: "",
+      planningName: "",
+    });
 
-  const handleArticileSave = () => {
-    logConsole.log("Article saved:", formData);
-  };
-
-  const handleArticileUpdate = () => {
-    logConsole.log("Article updated:", formData);
+    setFilterData({
+      article_id: "",
+      planningRoute_id: "",
+      status: "",
+      order_slip: "",
+    });
+    dispatch(resetStatus());
   };
 
   const handleDelete = () => {
-    console.log("Deleting row:", rowToDelete);
-    setDeleteModalOpen(false);
-    setRowToDelete(null);
-    setToastMessage({
-      message: "Item Deleted Successfully",
-      type: "Action Toast",
-    });
+    dispatch(deleteArticlePlanningThunk(rowToDelete._id))
+      .unwrap()
+      .then((res) => {
+        setDeleteModalOpen(false);
+        setToastMessage({ message: "Item Deleted Successfully", type: "" });
+        resetFormData();
+      })
+      .catch((error) => {
+        setDeleteModalOpen(false);
+        setToastMessage({
+          message: "Failed to Delete Article Planning.",
+          type: "",
+        });
+        resetFormData();
+      });
   };
 
-  const handleUndoDelete = () => {
-    console.log("Undo delete action");
-    setToastMessage({
-      message: "Deleted item recovered successfully",
-      type: "",
-    });
+  const handleSave = () => {
+    dispatch(createArticlePlanningThunk(formData))
+      .unwrap()
+      .then((res) => {
+        setAddNewArticleModalOpen(false);
+        setToastMessage({
+          message: "Articles created successfully!",
+          type: "",
+        });
+        resetFormData();
+      })
+      .catch((error) => {
+        setAddNewArticleModalOpen(false);
+
+        setToastMessage({
+          message: error || "Failed to create route.",
+          type: "",
+        });
+        resetFormData();
+      });
+  };
+
+  const handleUpdate = () => {
+    dispatch(
+      updateArticlePlanningThunk({
+        id: editFormData.id,
+        body: {
+          order_slip: editFormData.order_slip,
+          status: editFormData.status,
+          total_payment: editFormData.total_payment,
+          when_process_end: editFormData.when_process_end,
+          when_process_start: editFormData.when_process_start,
+          planningName: editFormData.planningName,
+        },
+      })
+    )
+      .unwrap()
+      .then((res) => {
+        setEditModalOpen(false);
+        setToastMessage({
+          message: "Article Planning Updated successfully!",
+          type: "",
+        });
+        resetFormData();
+      })
+      .catch((error) => {
+        setEditModalOpen(false);
+        setToastMessage({
+          message: error || "Failed to update route.",
+          type: "",
+        });
+        resetFormData();
+      });
   };
 
   const hanldeFilterData = () => {
-    console.log("Filtering with:", filterData);
+    dispatch(
+      getAllArticlePlanningThunk({ page, limit, search, ...filterData })
+    );
     setFilterModalOpen(false);
   };
 
-  const handleAddRow = () => {
-    const newRow = {
-      id: Date.now(), // unique id
-      ...formData,
-      action: { edit: true, delete: true },
-    };
-
-    setRows((prev) => [...prev, newRow]);
-    resetForm();
-    setAddNewArticleModalOpen(false);
+  const handleStatusUpdate = () => {
+    dispatch(
+      updateStatusThunk({
+        id: status.id,
+        body: {
+          status: status.status,
+        },
+      })
+    )
+      .unwrap()
+      .then((res) => {
+        setStatus({ id: "", status: "", isModelOpen: false });
+        setToastMessage({
+          message: "Status Updated successfully!",
+          type: "",
+        });
+      })
+      .catch((error) => {
+        setStatus({ id: "", status: "", isModelOpen: false });
+        setToastMessage({
+          message: error || "Failed to update Status",
+          type: "",
+        });
+      });
   };
 
-  const onDelete = (row) => {
-    const updated = rows.filter((item) => item.id !== row.id);
-    setRows(updated);
+  const handleOrderSlipUpdate = () => {
+    dispatch(
+      updateOrderSlipThunk({
+        id: orderSlip.id,
+        body: {
+          order_slip: orderSlip.order_slip,
+        },
+      })
+    )
+      .unwrap()
+      .then((res) => {
+        setOrderSlip({ id: "", order_slip: "", isModelOpen: false });
+        setToastMessage({
+          message: "Order Updated successfully!",
+          type: "",
+        });
+      })
+      .catch((error) => {
+        setOrderSlip({ id: "", order_slip: "", isModelOpen: false });
+        setToastMessage({
+          message: error || "Failed to update Status",
+          type: "",
+        });
+      });
   };
 
-  const onEdit = (row) => {
-    setEditRowId(row.id);
-    setFormData({
-      articleName: row.articleName,
-      routeName: row.routeName,
-      totalPayment: row.totalPayment,
-      whenProcessStart: row.whenProcessStart,
-      whenProcessEnd: row.whenProcessEnd,
-    });
+  const handleSearch = () => {
+    dispatch(setSearch(searchQuery));
   };
 
-  const saveUpdatedRow = () => {
-    const updatedRows = rows.map((row) =>
-      row.id === editRowId ? { ...row, ...formData } : row
-    );
-
-    setRows(updatedRows);
-    setEditRowId(null);
-    resetForm();
+  const handlePageChange = (page) => {
+    dispatch(setPage(page));
   };
 
-  const resetForm = () => {
-    setFormData({
-      articleName: "",
-      routeName: "",
-      totalPayment: "",
-      whenProcessStart: "",
-      whenProcessEnd: "",
-    });
+  const handlePageLimitChange = (limit) => {
+    dispatch(setPageLimit(limit));
   };
+
+  useEffect(() => {
+    dispatch(getAllArticlePlanningThunk({ page, limit, search }));
+  }, [limit, page, search]);
 
   return (
     <>
@@ -181,15 +302,24 @@ const ArticlePlanning = () => {
           {/* --------------- Table ---------------- */}
           <div className=" mt-5! w-full overflow-hidden">
             <Table
-              tableClassName={"min-w-[1328px]"}
+              tableClassName={"min-w-[1444px]"}
               tableHeader={ARTICLES_PLANNING_TABLE_HEADERS}
               tableData={
                 <ArticlePlanningTableRow
-                  rows={rows}
                   onEdit={(row) => {
                     setEditModalOpen(true);
-                    onEdit(row);
+                    setEditFormData({
+                      id: row._id,
+                      order_slip: row.order_slip,
+                      status: row.status,
+                      total_payment: row.total_payment,
+                      when_process_end: formatDate(row.when_process_end),
+                      when_process_start: formatDate(row.when_process_start),
+                      planningName: row.planningName,
+                    });
                   }}
+                  setStatus={setStatus}
+                  setOrderSlip={setOrderSlip}
                   onDelete={(row) => {
                     setDeleteModalOpen(true);
                     setRowToDelete(row);
@@ -197,6 +327,15 @@ const ArticlePlanning = () => {
                 />
               }
             />
+            <div className="">
+              <Pagination
+                page={page}
+                totalPages={total_pages}
+                pageLimit={limit}
+                onPageChange={handlePageChange}
+                onLimitChange={handlePageLimitChange}
+              />
+            </div>
           </div>
         </div>
       </Container>
@@ -209,20 +348,20 @@ const ArticlePlanning = () => {
           setFormData={setFormData}
           onClose={() => {
             setAddNewArticleModalOpen(false);
-            resetForm();
+            resetFormData();
           }}
-          onSave={handleAddRow}
+          onSave={handleSave}
         />
       )}
       {editModalOpen && (
         <UpdateArticilePlanningModel
-          formData={formData}
-          setFormData={setFormData}
+          formData={editFormData}
+          setFormData={setEditFormData}
           onClose={() => {
             setEditModalOpen(false);
-            resetForm();
+            resetFormData();
           }}
-          onUpdate={saveUpdatedRow}
+          onUpdate={handleUpdate}
         />
       )}
       {deleteModalOpen && (
@@ -231,16 +370,38 @@ const ArticlePlanning = () => {
             setDeleteModalOpen(false);
             rowToDelete(null);
           }}
-          OnDelete={() => onDelete(rowToDelete)}
+          OnDelete={handleDelete}
         />
       )}
 
       {filterModalOpen && (
-        <FilterModel
+        <ArticalPlanningFilterModel
           filterData={filterData}
           setFilterData={setFilterData}
           onFilter={hanldeFilterData}
           onClose={() => setFilterModalOpen(false)}
+        />
+      )}
+
+      {status.isModelOpen && (
+        <StatusUpdateModel
+          status={status}
+          setStatus={setStatus}
+          onClose={() => {
+            setStatus({ id: "", status: "", isModelOpen: false });
+          }}
+          onUpdate={handleStatusUpdate}
+        />
+      )}
+
+      {orderSlip.isModelOpen && (
+        <OrderSlipUpdate
+          orderSlip={orderSlip}
+          setOrderSlip={setOrderSlip}
+          onClose={() => {
+            setOrderSlip({ id: "", order_slip: "", isModelOpen: false });
+          }}
+          onUpdate={handleOrderSlipUpdate}
         />
       )}
 
@@ -249,8 +410,6 @@ const ArticlePlanning = () => {
         <Toast
           message={toastMessage.message}
           isOpen={toastMessage.message !== ""}
-          onClick={handleUndoDelete}
-          type={toastMessage.type}
           onClose={() => setToastMessage({ message: "", type: "" })}
         />
       )}

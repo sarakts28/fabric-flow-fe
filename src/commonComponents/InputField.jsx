@@ -6,16 +6,14 @@ export default function InputField({
   type = "text",
   placeholder = "--",
 }) {
-  // Function to apply DD/MM/YYYY masking live
+  // Function to apply YYYY-MM-DD masking live
   const applyDateMask = (val) => {
-    // Remove everything except numbers
     val = val.replace(/\D/g, "");
 
-    // Insert "/" dynamically
-    if (val.length > 2 && val.length <= 4) {
-      val = val.replace(/(\d{2})(\d{1,2})/, "$1/$2");
-    } else if (val.length > 4) {
-      val = val.replace(/(\d{2})(\d{2})(\d{1,4})/, "$1/$2/$3");
+    if (val.length > 4 && val.length <= 6) {
+      val = val.replace(/(\d{4})(\d{1,2})/, "$1-$2");
+    } else if (val.length > 6) {
+      val = val.replace(/(\d{4})(\d{2})(\d{1,2})/, "$1-$2-$3");
     }
 
     return val;
@@ -24,7 +22,6 @@ export default function InputField({
   const handleChange = (e) => {
     let val = e.target.value;
 
-    // Only mask when type is "date-mask"
     if (type === "date-mask") {
       val = applyDateMask(val);
     }
@@ -40,7 +37,7 @@ export default function InputField({
 
       <input
         placeholder={placeholder}
-        type="text" // Do NOT change — masked input needs text type
+        type="text"
         value={value}
         onChange={handleChange}
         className="border border-[#D0D5DD] w-full outline-none rounded-xl px-4! py-3!"

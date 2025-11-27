@@ -108,7 +108,7 @@ const articleSlice = createSlice({
 
       .addCase(getRawArticlesThunk.fulfilled, (state, action) => {
         state.loading.rawArticles = false;
-        state.rawArticles = action.payload;
+        state.rawArticles = action.payload.result;
       })
 
       .addCase(getRawArticlesThunk.rejected, (state, action) => {

@@ -14,25 +14,31 @@ const Input = ({
   return (
     <div className={`w-full ${className} mb-4!`}>
       <div className="w-full flex justify-between items-center mb-2!">
-        <span className="  font-normal text-[14px] sm:text-[16px] text-[#666666] leading-[100%]">
+        <span className="font-normal text-[14px] sm:text-[16px] text-[#666666] leading-[100%]">
           {placeHolderName}
         </span>
-        {isPasswordType ? (
+
+        {isPasswordType && (
           <span
-            className=" font-normal text-[14px] text-[#666666CC] cursor-pointer select-none"
+            className="font-normal text-[14px] text-[#666666CC] cursor-pointer select-none"
             onClick={() => setPasswordVisible(!passwordVisible)}
           >
             {passwordVisible ? (
-              <AiOutlineEyeInvisible className="inline-block mr-1!" />
-            ) : (
               <AiOutlineEye className="inline-block mr-1!" />
+            ) : (
+              <AiOutlineEyeInvisible className="inline-block mr-1!" />
             )}
-            {passwordVisible ? "Show" : "Hide"}
+            {passwordVisible ? "Hide" : "Show"}
           </span>
-        ) : null}
+        )}
       </div>
+
       <input
-        type={passwordVisible ? "password" : "text"}
+        type={isPasswordType ? (passwordVisible ? "text" : "password") : "text"}
+        autoComplete={isPasswordType ? "new-password" : undefined}
+        autoCorrect={isPasswordType ? "off" : undefined}
+        autoCapitalize={isPasswordType ? "off" : undefined}
+        spellCheck={isPasswordType ? "false" : undefined}
         name={name}
         value={value}
         onChange={onChnage}

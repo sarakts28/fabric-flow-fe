@@ -31,7 +31,7 @@ const Pagination = ({
   };
 
   return (
-    <div className="flex items-center justify-between py-4! w-full px-4! border-t border-amber-50 bg-white">
+    <div className="flex flex-col sm:flex-row sm:gap-0 gap-3  items-start sm:items-center justify-between py-4! w-full px-4! border-t border-amber-50 bg-white">
       {/* Limit Dropdown */}
       <select
         value={pageLimit}

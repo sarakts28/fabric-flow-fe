@@ -3,11 +3,13 @@ import {
   createPlanningRoute,
   deletePlanningRoute,
   fetchPlanningRoutes,
+  getAllPlanningRoutesWithoutPagination,
   updatePlanningRoute,
 } from "../thunk/routeThunk";
 
 const initialState = {
   list: [],
+  allRoutes: [],
   count: 0,
   search: "",
   pagination: {
@@ -20,6 +22,7 @@ const initialState = {
   },
   single: null,
   loading: {
+    allRoutes: false,
     list: false,
     single: false,
     create: false,
@@ -113,7 +116,29 @@ const routeSlice = createSlice({
       .addCase(deletePlanningRoute.rejected, (state, action) => {
         state.loading.delete = false;
         state.error = action.payload;
-      });
+      })
+
+      // ---------------- FETCH ALL WITHOUT PAGINATION --------------
+
+      .addCase(getAllPlanningRoutesWithoutPagination.pending, (state) => {
+        state.loading.allRoutes = true;
+      })
+
+      .addCase(
+        getAllPlanningRoutesWithoutPagination.fulfilled,
+        (state, action) => {
+          state.loading.allRoutes = false;
+          state.allRoutes = action.payload;
+        }
+      )
+
+      .addCase(
+        getAllPlanningRoutesWithoutPagination.rejected,
+        (state, action) => {
+          state.loading.allRoutes = false;
+          state.error = action.payload;
+        }
+      );
   },
 });
 

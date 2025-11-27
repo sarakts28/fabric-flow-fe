@@ -3,6 +3,7 @@ import {
   addRoute,
   deleteRoute,
   getAllRoutes,
+  getAllRoutesWithoutPagination,
   updateRoute,
 } from "../../services/routeServices";
 
@@ -54,6 +55,20 @@ export const deletePlanningRoute = createAsyncThunk(
       return res;
     } catch (error) {
       return rejectWithValue(error.message || "Delete failed");
+    }
+  }
+);
+
+// all without pagination
+
+export const getAllPlanningRoutesWithoutPagination = createAsyncThunk(
+  "planning/fetchAllWithoutPagination",
+  async (_, { rejectWithValue }) => {
+    try {
+      const res = await getAllRoutesWithoutPagination();
+      return res;
+    } catch (error) {
+      return rejectWithValue(error?.message || "Something went wrong");
     }
   }
 );

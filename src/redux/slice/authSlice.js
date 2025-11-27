@@ -14,7 +14,14 @@ const initialState = {
 const authSlice = createSlice({
   name: "auth",
   initialState,
-  reducers: {},
+  reducers: {
+    forceLogout(state) {
+      state.userDetail = null;
+      state.isAuthenticated = false;
+      state.loading = false;
+      state.error = null;
+    },
+  },
   extraReducers: (builder) => {
     builder
       // Login Cases

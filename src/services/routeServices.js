@@ -29,6 +29,15 @@ export const updateRoute = async (id, routeData) => {
   }
 };
 
+export const getAllRoutesWithoutPagination = async () => {
+  try {
+    const res = await API.get("/planning-route/all");
+    return res.data.data;
+  } catch (error) {
+    throw { message: handleApiError(error) };
+  }
+};
+
 export const deleteRoute = async (id) => {
   try {
     await API.delete(`/planning-route/${id}`);

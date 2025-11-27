@@ -13,8 +13,13 @@ export const CATEGORIES_TABLE_HEADERS = [
 ];
 
 export const ARTICLES_PLANNING_TABLE_HEADERS = [
-  { label: "Article Name", index: "articleName" },
-  { label: "Route Name", index: "routeName" },
+  { label: "Planning Name", index: "planningName" },
+  { label: "Article Id", index: "articleId" },
+  { label: "Planning Route Id", index: "PlanningRouteId" },
+  { label: "Status", index: "status" },
+  { label: "Late", index: "late" },
+  { label: "Order Slip", index: "orderSlip" },
+  { label: "Process Days", index: "processDays" },
   { label: "Total Payment", index: "totalPayment" },
   { label: "When Process Start", index: "whenProcessStart" },
   { label: "When Process End", index: "whenProcessEnd" },

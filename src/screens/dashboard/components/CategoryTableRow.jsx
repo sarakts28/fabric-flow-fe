@@ -40,7 +40,7 @@ const CategoryTableRow = ({ className, onDelete, onEdit }) => {
 
         {/* ACTIONS */}
         <td className="text-center text-[14px]! text-black p-2! flex items-center justify-center gap-3">
-          {isRoleAllowed(["designer"], userDetail.user.userType) && (
+          {isRoleAllowed(["admin"], userDetail.user.userType) && (
             <span
               className=" text-black cursor-pointer"
               onClick={() => {

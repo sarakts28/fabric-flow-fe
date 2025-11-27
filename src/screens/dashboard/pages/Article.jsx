@@ -152,8 +152,6 @@ const Article = () => {
         resetFormData();
       })
       .catch((error) => {
-        console.log(error, "error");
-
         setDeleteModalOpen(false);
         setToastMessage({
           message: "Failed to Delete Article.",

@@ -32,18 +32,24 @@ export function Dropdown({ label, options, value, onChange }) {
 
       {open && (
         <ul className="absolute mt-2! w-full bg-white border border-[#D0D5DD] rounded-xl shadow-lg z-10 max-h-60 overflow-auto animate-fadeIn">
-          {options.map((opt) => (
-            <li
-              key={opt.value || opt}
-              onClick={() => {
-                onChange(opt.value || opt);
-                setOpen(false);
-              }}
-              className="px-4! py-3! hover:bg-gray-100 cursor-pointer"
-            >
-              {opt.label || opt}
+          {options.length === 0 ? (
+            <li className="px-4! py-3! text-gray-400 cursor-default">
+              No {label} available
             </li>
-          ))}
+          ) : (
+            options.map((opt) => (
+              <li
+                key={opt.value || opt}
+                onClick={() => {
+                  onChange(opt.value || opt);
+                  setOpen(false);
+                }}
+                className="px-4! py-3! hover:bg-gray-100 cursor-pointer"
+              >
+                {opt.label || opt}
+              </li>
+            ))
+          )}
         </ul>
       )}
     </div>
