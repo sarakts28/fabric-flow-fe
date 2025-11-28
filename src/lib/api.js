@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const API = axios.create({
-  baseURL: "https://febric-flow-backend.onrender.com/api",
+  baseURL: import.meta.env.VITE_APP_API_BASE_URL,
   withCredentials: true, // VERY IMPORTANT to send cookies (access + refresh)
   headers: {
     "Content-Type": "application/json",
