@@ -85,11 +85,7 @@ const ArticleTableRow = ({
                   return (
                     <img
                       key={index}
-                      src={
-                        imgSrc.url.includes("http://localhost:5000")
-                          ? imgSrc.url
-                          : `http://localhost:5000${imgSrc.url}`
-                      }
+                      src={imgSrc.url}
                       alt={`Article ${info.article_no} - Image`}
                       className={`absolute w-10 h-10 object-cover rounded-md shadow ${positions[index]} ${offsets[index]}`}
                     />
